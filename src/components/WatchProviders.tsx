@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { tmdbClient } from '../api/tmdb';
+import { fetchTMDB, hasTMDBKey } from '../api/tmdb';
 import { useStore } from '../store/useStore';
 import { colors, spacing, typography } from '../theme';
 
@@ -17,8 +17,8 @@ export const WatchProviders = ({ mediaId, mediaType }: Props) => {
   useEffect(() => {
     const fetchProviders = async () => {
       try {
-        const res = await tmdbClient.get(`/${mediaType}/${mediaId}/watch/providers`);
-        const countryData = res.data.results[country.toUpperCase()];
+        const data = await fetchTMDB(`/${mediaType}/${mediaId}/watch/providers`);
+        const countryData = data.results[country.toUpperCase()];
         
         if (countryData && countryData.flatrate) {
           setProviders(countryData.flatrate);
@@ -31,7 +31,7 @@ export const WatchProviders = ({ mediaId, mediaType }: Props) => {
         setLoading(false);
       }
     };
-    if (mediaId && tmdbClient.defaults.params.api_key) {
+    if (mediaId && hasTMDBKey) {
       fetchProviders();
     } else {
       setLoading(false);
